@@ -67,6 +67,15 @@ Bootstrap full agentic engineering setup for this machine.
 
 The Skill should also trigger naturally for mentions of agentic engineering, compound engineering, `/ce-plan`, `/ce-work`, `/last30days`, `plan.md`, cmux, research-first execution, human signal, or reusable agent workflows.
 
+## Automatic Triggering
+
+Automatic triggering is enabled through two pieces:
+
+- `agentic-engineering/SKILL.md` has a broad `description` with the trigger phrases Codex sees before loading the Skill.
+- `agentic-engineering/agents/openai.yaml` sets `policy.allow_implicit_invocation: true`.
+
+After installing or updating the Skill, restart Codex so the skill metadata is reloaded. Once reloaded, you can invoke it explicitly with `$agentic-engineering`, but Codex can also pick it automatically when the request matches the description.
+
 ## Validation
 
 Validate the Skill metadata with the Codex skill creator helper:
