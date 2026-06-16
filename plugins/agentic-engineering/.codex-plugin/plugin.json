@@ -1,0 +1,37 @@
+{
+  "name": "agentic-engineering",
+  "version": "0.1.0",
+  "description": "Plan-first agentic engineering workflows for Codex.",
+  "author": {
+    "name": "alexwang91",
+    "url": "https://github.com/alexwang91"
+  },
+  "homepage": "https://github.com/alexwang91/agentic-engineering-skill",
+  "repository": "https://github.com/alexwang91/agentic-engineering-skill",
+  "license": "MIT",
+  "keywords": [
+    "agentic-engineering",
+    "compound-engineering",
+    "planning",
+    "skills",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Agentic Engineering",
+    "shortDescription": "Plan-first agentic engineering workflows.",
+    "longDescription": "Agentic Engineering packages a research-grounded, plan-first workflow for Codex. It helps turn ideas, bugs, meeting transcripts, product specs, strategy docs, and reusable agent workflows into explicit plans, scoped execution, verification, and context-compounding follow-up.",
+    "developerName": "alexwang91",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "websiteURL": "https://github.com/alexwang91/agentic-engineering-skill",
+    "defaultPrompt": [
+      "Use Agentic Engineering to plan this feature.",
+      "Turn this bug into a research-grounded plan.",
+      "Bootstrap an agentic engineering setup."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

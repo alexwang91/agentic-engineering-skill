@@ -2,7 +2,7 @@
 
 A Codex/agentskills-style Skill that turns Matt Van Horn's June 2026 agentic engineering workflow notes into reusable agent behavior.
 
-This repository does not reproduce the source article. It paraphrases the workflow into compact instructions, references, guardrails, and examples that an agent can load when planning and executing work.
+This repository also packages the Skill as a Codex plugin marketplace entry, so it can be installed from the Codex Plugins UI or CLI. It does not reproduce the source article; it paraphrases the workflow into compact instructions, references, guardrails, and examples that an agent can load when planning and executing work.
 
 ## What It Does
 
@@ -16,6 +16,14 @@ This repository does not reproduce the source article. It paraphrases the workfl
 ## Repository Layout
 
 ```text
+.
+  .agents/plugins/marketplace.json
+  plugins/agentic-engineering/
+    .codex-plugin/plugin.json
+    skills/agentic-engineering/
+      SKILL.md
+      agents/openai.yaml
+      references/
 agentic-engineering/
   SKILL.md
   agents/openai.yaml
@@ -25,7 +33,40 @@ agentic-engineering/
     hack-map.md
 ```
 
-## Install
+## Install As A Codex Plugin
+
+Install the marketplace from GitHub:
+
+```bash
+codex plugin marketplace add alexwang91/agentic-engineering-skill
+```
+
+Then install the plugin:
+
+```bash
+codex plugin add agentic-engineering@agentic-engineering
+```
+
+Restart Codex or start a new thread after installing so the bundled skill metadata is loaded.
+
+You can also open the Codex app, go to **Plugins**, select the Agentic Engineering marketplace, and install **Agentic Engineering**.
+
+## Share In A Workspace
+
+After installing locally, you can share it with members of your ChatGPT workspace from the Codex app:
+
+1. Open **Plugins**.
+2. Go to **Created by you**.
+3. Open **Agentic Engineering**.
+4. Select **Share** and choose people, groups, or copy a share link.
+
+Workspace sharing does not publish the plugin to the public Plugin Directory. It keeps access inside your workspace or organization boundary.
+
+## Public Directory Status
+
+The current Codex manual documents local, repo, and workspace plugin distribution. It does not document a self-serve submission flow for OpenAI's public curated plugin directory. This repository is packaged so it is ready for a repo marketplace and workspace sharing; a public OpenAI-curated listing would still require whatever review or partner process OpenAI makes available.
+
+## Install As A Standalone Skill
 
 Clone the repository:
 

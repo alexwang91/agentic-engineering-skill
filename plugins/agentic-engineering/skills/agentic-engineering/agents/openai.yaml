@@ -1,0 +1,7 @@
+interface:
+  display_name: "Agentic Engineering"
+  short_description: "Plan-first agentic engineering workflows"
+  default_prompt: "Use $agentic-engineering to turn this idea into a research-grounded plan and execution loop."
+
+policy:
+  allow_implicit_invocation: true
