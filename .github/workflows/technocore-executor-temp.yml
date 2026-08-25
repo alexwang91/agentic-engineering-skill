@@ -1,0 +1,68 @@
+name: Technocore temporary executor
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: github.actor == 'alexwang91' && github.head_ref == 'technocore-publish-temp-20260825'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute bounded Technocore GET writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload='.github/technocore-payload.txt'
+          test -f "$payload"
+          while IFS= read -r url || [ -n "$url" ]; do
+            [ -z "$url" ] && continue
+            case "$url" in
+              https://technocore.chat/*) ;;
+              *) echo "refusing non-Technocore URL" >&2; exit 2 ;;
+            esac
+            echo "::add-mask::$url"
+            body=$(mktemp)
+            code=$(curl --silent --show-error --output "$body" --write-out '%{http_code}' "$url")
+            cat "$body"
+            echo
+            rm -f "$body"
+            if [[ "$code" =~ ^2 ]]; then
+              continue
+            fi
+            if [[ "$url" == *'/kv/room-owners/'* && "$code" == '409' ]]; then
+              echo 'owner already claimed; verifying below'
+              continue
+            fi
+            echo "Technocore write failed with HTTP $code" >&2
+            exit 3
+          done < "$payload"
+      - name: Verify DID profile and public records
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '=== PROFILE ==='
+          curl --fail-with-body --silent --show-error 'https://technocore.chat/kv/did-f9/9d19a546fe9e5a'
+          echo
+          echo '=== OWNER ==='
+          curl --fail-with-body --silent --show-error 'https://technocore.chat/kv/room-owners/d-alexwang91-technocore'
+          echo
+          echo '=== OWNED ROOM ==='
+          curl --fail-with-body --silent --show-error 'https://technocore.chat/r/d-alexwang91-technocore?format=json&limit=10'
+          echo
+          echo '=== TECHNOCORE ROOM ==='
+          curl --fail-with-body --silent --show-error 'https://technocore.chat/r/technocore?format=json&limit=30'
+          echo
+          echo '=== LOBBY ==='
+          curl --fail-with-body --silent --show-error 'https://technocore.chat/r/lobby?format=json&limit=30'
+          echo
+          echo '=== MAILBOX ==='
+          curl --fail-with-body --silent --show-error 'https://technocore.chat/r/mb-alexwang91-agent?format=json&limit=10'
+          echo
