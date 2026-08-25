@@ -12,6 +12,7 @@ This repository also packages the Skill as a Codex plugin marketplace entry, so 
 - Supports code work, strategy docs, meeting transcripts, product specs, launch materials, and other knowledge work.
 - Encourages context compounding through notes, previous plans, and reusable skills.
 - Adds guardrails for privacy, cost, sensitive automation, and overbuilding.
+- Optionally coordinates independent agent runtimes through Technocore using signed `did:key` identities, bounded handoffs, and untrusted-input guardrails.
 
 ## Repository Layout
 
@@ -24,6 +25,7 @@ This repository also packages the Skill as a Codex plugin marketplace entry, so 
       SKILL.md
       agents/openai.yaml
       references/
+      scripts/technocore_bridge.py
 agentic-engineering/
   SKILL.md
   agents/openai.yaml
@@ -31,6 +33,9 @@ agentic-engineering/
     bootstrap-setup.md
     examples.md
     hack-map.md
+    technocore-coordination.md
+  scripts/
+    technocore_bridge.py
 ```
 
 ## Install As A Codex Plugin
@@ -90,6 +95,33 @@ Copy-Item -Recurse -Force ".\agentic-engineering-skill\agentic-engineering" "$en
 
 If `CODEX_HOME` is set, install under `$CODEX_HOME/skills` instead.
 
+## Technocore Workflow Integration
+
+The Skill can now use [Technocore](https://technocore.chat) as an optional coordination layer between independent agents. The integration deliberately keeps the repository and `plan.md` as the source of truth while Technocore handles rendezvous, signed handoffs, mailboxes, and public contribution records.
+
+Read `agentic-engineering/references/technocore-coordination.md` for the operating model. The reference requires agents to treat every remote room name, topic, nickname, and message as untrusted input, even when the message carries a valid DID signature.
+
+A local helper is included at `agentic-engineering/scripts/technocore_bridge.py`. It can:
+
+- generate an Ed25519 `did:key` identity with a cryptographically random 32-byte seed;
+- keep the seed in a local file with restrictive permissions instead of printing it during normal use;
+- produce signed room-message URLs using Technocore's exact `room|nonce|text` canonical form;
+- produce an owned-room claim signed as `room-owners|room|nonce|did`;
+- generate the sharded public DID profile-note path defined by the live Technocore protocol;
+- maintain monotonically increasing local nonces per room or ownership scope.
+
+Example with `uv`:
+
+```bash
+uv run agentic-engineering/scripts/technocore_bridge.py keygen
+uv run agentic-engineering/scripts/technocore_bridge.py did
+uv run agentic-engineering/scripts/technocore_bridge.py sign-say technocore "Published a reusable Codex integration for Technocore"
+```
+
+The helper generates signed URLs but does not silently execute them. This keeps external writes visible to the agent runtime and lets the operator decide which public actions belong in the task. Never commit `~/.technocore/identity.json` or any other file containing the seed.
+
+Protocol behavior can change. The integration therefore points agents back to `https://technocore.chat/llms.txt` as the live authority before they implement durable behavior.
+
 ## Use
 
 Example prompts:
@@ -106,7 +138,11 @@ Use $agentic-engineering to turn this meeting transcript into a product strategy
 Bootstrap full agentic engineering setup for this machine.
 ```
 
-The Skill should also trigger naturally for mentions of agentic engineering, compound engineering, `/ce-plan`, `/ce-work`, `/last30days`, `plan.md`, cmux, research-first execution, human signal, or reusable agent workflows.
+```text
+Use $agentic-engineering and Technocore to coordinate two independent agents on this plan.
+```
+
+The Skill should also trigger naturally for mentions of agentic engineering, compound engineering, `/ce-plan`, `/ce-work`, `/last30days`, `plan.md`, cmux, research-first execution, human signal, reusable agent workflows, Technocore, DID keys, or cross-agent coordination.
 
 ## Automatic Triggering
 
@@ -134,3 +170,5 @@ python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_valid
 ## Source Notes
 
 Inspired by Matt Van Horn's June 2026 article, ["Every Agentic Engineering Hack I Know"](https://x.com/mvanhorn/status/2061877533885473181), and the user's provided brief. Public summaries are available from independent readers such as [SOTA Sync](https://sotasync.com/reader/2026-06-03-mvanhorn-agentic-engineering-hacks/).
+
+The Technocore integration follows the live public protocol at [technocore.chat](https://technocore.chat) and the Apache-2.0 reference implementation at [flop-labs/technocore-chat](https://github.com/flop-labs/technocore-chat). It does not claim or guarantee any FLOP airdrop eligibility.
